@@ -1,0 +1,842 @@
+ <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uji Kompetensi Kenaikan Jenjang Guru</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: auto;
+            position: relative;
+        }
+        .header-main-title {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        h1 {
+            color: #0056b3;
+            margin: 0;
+            font-size: 2em;
+        }
+        .author-info {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        .author-info p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .author-info p:first-child {
+            font-weight: bold;
+            color: #333;
+            font-size: 1em;
+        }
+        .header-image {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #0056b3;
+            z-index: 10;
+        }
+        .left-header-image {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #0056b3;
+            z-index: 10;
+        }
+
+        /* General for other sections */
+        h2 {
+            color: #0056b3;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .question {
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .question p {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: normal;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #timer {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d9534f;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        #timeLimitDisplay {
+            text-align: right;
+            font-weight: bold;
+            margin-bottom: 5px;
+            margin-top: 50px;
+        }
+        #results {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            display: none;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        .cooldown-message {
+            text-align: center;
+            font-size: 1.2em;
+            color: #d9534f;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #d9534f;
+            border-radius: 5px;
+            background-color: #ffe0e0;
+        }
+
+        /* Media queries for responsiveness */
+        @media (max-width: 600px) {
+            .header-image, .left-header-image {
+                position: static;
+                margin: 10px auto;
+                display: block;
+            }
+            .header-main-title, .author-info {
+                text-align: center;
+            }
+            .container {
+                position: static;
+            }
+            #timeLimitDisplay {
+                margin-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-main-title">
+            <h1>Uji Kompetensi Kenaikan Jenjang Guru</h1>
+        </div>
+        <div class="author-info">
+            <p>By. Torus Manuntun Nababan, S.Pd.,M.Pd</p>
+            <p>(Pengembang Soal Uji Kompetensi)</p>
+        </div>
+        <img src="logo.png" alt="Logo Instansi" class="left-header-image">
+        <img src="jas.jpg" alt="Foto Torus Manuntun Nababan, S.Pd.,M.Pd" class="header-image">
+
+
+        <p id="timeLimitDisplay">Waktu pengerjaan: <span id="timeLimit">30</span> menit</p>
+        <div id="timer">Waktu tersisa: 30:00</div>
+
+        <form id="quizForm">
+            <h2>Identitas Guru PNS</h2>
+            <div class="form-group">
+                <label for="nip">NIP:</label>
+                <input type="text" id="nip" name="nip" required>
+            </div>
+            <div class="form-group">
+                <label for="namaGuru">Nama Lengkap:</label>
+                <input type="text" id="namaGuru" name="namaGuru" required>
+            </div>
+            <div class="form-group">
+                <label for="unitKerja">Unit Kerja:</label>
+                <input type="text" id="unitKerja" name="unitKerja" required>
+            </div>
+            <div class="form-group">
+                <label for="golongan">Golongan/Ruang:</label>
+                <input type="text" id="golongan" name="golongan" value="IV/a" readonly>
+            </div>
+            <div class="form-group">
+                <label for="jenjang">Jenjang Jabatan:</label>
+                <input type="text" id="jenjang" name="jenjang" placeholder="Contoh: Guru Madya" required>
+            </div>
+
+            <hr>
+
+            <h2>Soal Uji Kompetensi</h2>
+            <div id="questionsContainer">
+            </div>
+
+            <button type="submit">Selesai Uji Kompetensi</button>
+        </form>
+
+        <div id="results">
+            <h2>Hasil Uji Kompetensi</h2>
+            <p><strong>Nama Guru:</strong> <span id="resultNamaGuru"></span></p>
+            <p><strong>NIP:</strong> <span id="resultNIP"></span></p>
+            <p><strong>Skor Anda:</strong> <span id="score"></span></p>
+            <p id="message"></p>
+            <h3>Detail Jawaban:</h3>
+            <div id="answerDetails">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // Pedagogical Competence (10 questions)
+            {
+                type: "pedagogik",
+                question: "Seorang guru merancang pembelajaran yang menekankan pada pengembangan kemampuan berpikir kritis siswa melalui studi kasus. Pendekatan ini paling sesuai dengan teori belajar...",
+                options: ["Behaviorisme", "Kognitivisme", "Konstruktivisme", "Humanisme"],
+                answer: "Konstruktivisme"
+            },
+            {
+                type: "pedagogik",
+                question: "Dalam menyusun Rencana Pelaksanaan Pembelajaran (RPP), komponen utama yang harus diperhatikan agar pembelajaran berpusat pada siswa adalah...",
+                options: ["Alokasi waktu dan sumber belajar", "Indikator pencapaian kompetensi dan tujuan pembelajaran", "Materi pembelajaran dan metode penilaian", "Strategi pembelajaran dan media pembelajaran"],
+                answer: "Strategi pembelajaran dan media pembelajaran"
+            },
+            {
+                type: "pedagogik",
+                question: "Ketika menghadapi siswa yang menunjukkan kesulitan belajar pada materi tertentu, tindakan pertama yang paling tepat dilakukan guru adalah...",
+                options: ["Memberikan tugas tambahan yang lebih sulit", "Memanggil orang tua siswa untuk membahas masalah", "Melakukan diagnosis kesulitan belajar untuk mengidentifikasi akar masalah", "Mengarahkan siswa untuk mencari les privat"],
+                answer: "Melakukan diagnosis kesulitan belajar untuk mengidentifikasi akar masalah"
+            },
+            {
+                type: "pedagogik",
+                question: "Seorang guru ingin meningkatkan motivasi belajar siswa yang pasif. Strategi pembelajaran yang paling efektif untuk diterapkan adalah...",
+                options: ["Pemberian ceramah interaktif", "Tugas individu dengan batas waktu ketat", "Pembelajaran berbasis proyek atau masalah", "Penilaian harian yang ketat"],
+                answer: "Pembelajaran berbasis proyek atau masalah"
+            },
+            {
+                type: "pedagogik",
+                question: "Aspek penting dalam evaluasi pembelajaran yang berfokus pada proses dan hasil belajar siswa secara berkelanjutan disebut...",
+                options: ["Penilaian sumatif", "Penilaian diagnostik", "Penilaian formatif", "Penilaian autentik"],
+                answer: "Penilaian formatif"
+            },
+            {
+                type: "pedagogik",
+                question: "Prinsip dasar yang harus diperhatikan dalam pengembangan kurikulum adalah...",
+                options: ["Fleksibilitas dan relevansi dengan kebutuhan siswa", "Keseragaman materi di semua jenjang", "Prioritas pada ujian nasional", "Penggunaan satu metode pembelajaran"],
+                answer: "Fleksibilitas dan relevansi dengan kebutuhan siswa"
+            },
+            {
+                type: "pedagogik",
+                question: "Kemampuan guru dalam mengelola kelas untuk menciptakan lingkungan belajar yang kondusif dikenal sebagai...",
+                options: ["Manajemen waktu", "Manajemen kurikulum", "Manajemen kelas", "Manajemen sumber daya"],
+                answer: "Manajemen kelas"
+            },
+            {
+                type: "pedagogik",
+                question: "Salah satu indikator keberhasilan pembelajaran adalah jika siswa mampu...",
+                options: ["Menghafal semua materi pelajaran", "Mencapai tujuan pembelajaran yang telah ditetapkan", "Mendapatkan nilai sempurna dalam setiap ujian", "Selalu menuruti perintah guru tanpa pertanyaan"],
+                answer: "Mencapai tujuan pembelajaran yang telah ditetapkan"
+            },
+            {
+                type: "pedagogik",
+                question: "Dalam pembelajaran berdiferensiasi, guru menyesuaikan pembelajaran berdasarkan...",
+                options: ["Keseragaman kemampuan siswa", "Minat, kesiapan, dan profil belajar siswa", "Tuntutan kurikulum semata", "Jumlah siswa dalam kelas"],
+                answer: "Minat, kesiapan, dan profil belajar siswa"
+            },
+            {
+                type: "pedagogik",
+                question: "Ketika merencanakan penilaian, guru harus memastikan bahwa penilaian tersebut...",
+                options: ["Hanya mengukur kemampuan hafalan", "Valid, reliabel, dan objektif", "Dilakukan hanya di akhir semester", "Hanya menggunakan satu jenis instrumen"],
+                answer: "Valid, reliabel, dan objektif"
+            },
+
+            // Social Competence (10 questions)
+            {
+                type: "sosial",
+                question: "Sebagai seorang guru, Anda dihadapkan pada situasi di mana ada perbedaan pendapat yang kuat antara orang tua siswa mengenai kebijakan sekolah. Sikap yang paling tepat Anda ambil adalah...",
+                options: ["Memihak salah satu pihak yang didukung mayoritas", "Menghindari keterlibatan dalam perdebatan tersebut", "Menjembatani komunikasi, mencari titik temu, dan mengedepankan kepentingan terbaik siswa", "Menyampaikan masalah ini sepenuhnya kepada kepala sekolah"],
+                answer: "Menjembatani komunikasi, mencari titik temu, dan mengedepankan kepentingan terbaik siswa"
+            },
+            {
+                type: "sosial",
+                question: "Interaksi yang efektif antara guru dan masyarakat dalam konteks pendidikan diwujudkan melalui...",
+                options: ["Pengiriman laporan nilai siswa secara berkala", "Keterlibatan aktif dalam kegiatan kemasyarakatan di luar sekolah", "Membangun komunikasi dua arah yang positif dan kolaborasi untuk mendukung pendidikan siswa", "Mengundang orang tua hanya saat ada masalah kedisiplinan siswa"],
+                answer: "Membangun komunikasi dua arah yang positif dan kolaborasi untuk mendukung pendidikan siswa"
+            },
+            {
+                type: "sosial",
+                question: "Anda menemukan adanya stereotip negatif yang berkembang di lingkungan sekolah tentang kelompok siswa tertentu. Sebagai guru, tindakan yang paling bertanggung jawab adalah...",
+                options: ["Mengabaikannya karena bukan masalah akademik", "Melaporkannya kepada kepala sekolah tanpa tindakan lebih lanjut", "Mengedukasi siswa lain tentang pentingnya keberagaman dan menghapus stereotip negatif", "Menasehati siswa dari kelompok tersebut untuk tidak terlalu sensitif"],
+                answer: "Mengedukasi siswa lain tentang pentingnya keberagaman dan menghapus stereotip negatif"
+            },
+            {
+                type: "sosial",
+                question: "Seorang guru yang memiliki kompetensi sosial tinggi akan senantiasa berusaha untuk...",
+                options: ["Mengisolasi diri dari lingkungan sekolah agar lebih fokus mengajar", "Menciptakan lingkungan belajar yang inklusif dan mempromosikan toleransi antar siswa", "Berkomunikasi hanya dengan rekan sejawat dari mata pelajaran yang sama", "Menjaga jarak dengan siswa agar tetap disegani"],
+                answer: "Menciptakan lingkungan belajar yang inklusif dan mempromosikan toleransi antar siswa"
+            },
+            {
+                type: "sosial",
+                question: "Dalam menghadapi rekan kerja yang memiliki pandangan berbeda mengenai strategi pembelajaran, seorang guru yang profesional akan...",
+                options: ["Memaksakan pandangannya sendiri karena merasa paling benar", "Menghindari diskusi dengan rekan kerja tersebut", "Terbuka terhadap masukan, mendiskusikan perbedaan, dan mencari solusi terbaik untuk pembelajaran", "Mengadu kepada atasan tentang ketidaksepahaman tersebut"],
+                answer: "Terbuka terhadap masukan, mendiskusikan perbedaan, dan mencari solusi terbaik untuk pembelajaran"
+            },
+            {
+                type: "sosial",
+                question: "Bagaimana guru dapat berkontribusi dalam membangun citra positif sekolah di mata masyarakat?",
+                options: ["Dengan tidak berinteraksi dengan masyarakat", "Dengan menjaga kerahasiaan semua informasi sekolah", "Dengan berpartisipasi aktif dalam kegiatan sosial dan menunjukkan profesionalisme", "Dengan fokus hanya pada tugas mengajar di kelas"],
+                answer: "Dengan berpartisipasi aktif dalam kegiatan sosial dan menunjukkan profesionalisme"
+            },
+            {
+                type: "sosial",
+                question: "Jika seorang guru mendapati salah satu siswanya menjadi korban perundungan, tindakan yang paling tepat adalah...",
+                options: ["Menyuruh siswa tersebut untuk melawan sendiri", "Melaporkan kepada kepala sekolah dan melakukan intervensi sesuai prosedur sekolah", "Mengabaikan karena itu masalah antar siswa", "Memberikan hukuman kepada korban agar lebih kuat"],
+                answer: "Melaporkan kepada kepala sekolah dan melakukan intervensi sesuai prosedur sekolah"
+            },
+            {
+                type: "sosial",
+                question: "Kemampuan guru untuk berkomunikasi secara efektif dengan siswa dari berbagai latar belakang budaya dan sosial adalah bagian dari kompetensi...",
+                options: ["Pedagogik", "Sosial", "Kepribadian", "Profesional"],
+                answer: "Sosial"
+            },
+            {
+                type: "sosial",
+                question: "Menjaga hubungan harmonis dengan sesama rekan guru merupakan wujud dari...",
+                options: ["Sikap individualistis", "Kolaborasi profesional", "Persaingan sehat", "Kepatuhan hierarki"],
+                answer: "Kolaborasi profesional"
+            },
+            {
+                type: "sosial",
+                question: "Seorang guru yang responsif terhadap kebutuhan masyarakat di sekitarnya akan...",
+                options: ["Menutup diri dari masalah sosial", "Menginisiasi program-program yang relevan dengan kebutuhan komunitas", "Hanya fokus pada kebutuhan akademik siswa", "Membatasi interaksi di luar jam sekolah"],
+                answer: "Menginisiasi program-program yang relevan dengan kebutuhan komunitas"
+            },
+
+            // Personality Competence (10 questions)
+            {
+                type: "kepribadian",
+                question: "Integritas seorang guru ditunjukkan melalui...",
+                options: ["Kemampuan mengajar dengan metode yang bervariasi", "Konsistensi antara perkataan dan perbuatan, serta menjunjung tinggi kode etik profesi", "Kerapihan dalam berpakaian dan penampilan", "Partisipasi aktif dalam lomba-lomba akademik"],
+                answer: "Konsistensi antara perkataan dan perbuatan, serta menjunjung tinggi kode etik profesi"
+            },
+            {
+                type: "kepribadian",
+                question: "Ketika dihadapkan pada kritik atau masukan dari siswa atau orang tua, sikap profesional seorang guru adalah...",
+                options: ["Merasa tersinggung dan mengabaikan kritik tersebut", "Membalas kritik dengan argumen yang kuat", "Menerima kritik dengan lapang dada, mereflefleksikan diri, dan menjadikannya bahan perbaikan", "Meminta kepala sekolah untuk menegur pihak yang mengkritik"],
+                answer: "Menerima kritik dengan lapang dada, mereflefleksikan diri, dan menjadikannya bahan perbaikan"
+            },
+            {
+                type: "kepribadian",
+                question: "Kemampuan adaptasi seorang guru sangat penting di tengah perubahan kurikulum dan teknologi. Hal ini diwujudkan dengan...",
+                options: ["Tetap menggunakan metode mengajar tradisional yang sudah nyaman", "Menolak mengikuti pelatihan baru karena merasa sudah berpengalaman", "Berpartisipasi aktif dalam pelatihan dan mengembangkan diri sesuai tuntutan zaman", "Hanya mengajar sesuai dengan buku teks yang tersedia"],
+                answer: "Berpartisipasi aktif dalam pelatihan dan mengembangkan diri sesuai tuntutan zaman"
+            },
+            {
+                type: "kepribadian",
+                question: "Seorang guru yang matang dan stabil emosinya akan menunjukkan ciri-ciri sebagai berikut, kecuali...",
+                options: ["Mampu mengendalikan diri dalam situasi sulit", "Bersikap sabar dan empatik terhadap siswa", "Mudah tersulut emosi saat menghadapi masalah kecil", "Mampu mengambil keputusan secara rasional"],
+                answer: "Mudah tersulut emosi saat menghadapi masalah kecil"
+            },
+            {
+                type: "kepribadian",
+                question: "Bagaimana seorang guru sebaiknya menunjukkan loyalitasnya terhadap profesi dan instansinya?",
+                options: ["Hanya mengikuti perintah atasan tanpa inisiatif", "Berpartisipasi aktif dalam pengembangan sekolah dan menjaga nama baik institusi", "Menyebarkan informasi internal sekolah kepada pihak luar", "Prioritaskan kepentingan pribadi di atas kepentingan sekolah"],
+                answer: "Berpartisipasi aktif dalam pengembangan sekolah dan menjaga nama baik institusi"
+            },
+            {
+                type: "kepribadian",
+                question: "Sikap seorang guru yang patut dicontoh oleh siswa adalah...",
+                options: ["Suka menyalahkan orang lain", "Disiplin dan bertanggung jawab", "Melanggar peraturan sesekali", "Tidak peduli dengan lingkungan sekitar"],
+                answer: "Disiplin dan bertanggung jawab"
+            },
+            {
+                type: "kepribadian",
+                question: "Bagaimana seorang guru menunjukkan sikap adil kepada semua siswa?",
+                options: ["Memperlakukan semua siswa dengan sama tanpa memandang latar belakang", "Memberikan nilai tinggi kepada siswa favorit", "Lebih fokus pada siswa yang pandai", "Mengabaikan siswa yang kesulitan belajar"],
+                answer: "Memperlakukan semua siswa dengan sama tanpa memandang latar belakang"
+            },
+            {
+                type: "kepribadian",
+                question: "Keteladanan guru dalam berperilaku sehari-hari akan berdampak positif pada...",
+                options: ["Nilai ujian siswa", "Disiplin dan karakter siswa", "Jumlah tugas yang diberikan", "Penggunaan fasilitas sekolah"],
+                answer: "Disiplin dan karakter siswa"
+            },
+            {
+                type: "kepribadian",
+                question: "Ketika menghadapi tekanan kerja, seorang guru yang memiliki kompetensi kepribadian yang baik akan...",
+                options: ["Mengeluh terus-menerus", "Mencari solusi dan tetap tenang", "Menyalahkan rekan kerja", "Mengambil cuti panjang"],
+                answer: "Mencari solusi dan tetap tenang"
+            },
+            {
+                type: "kepribadian",
+                question: "Menjaga etika profesi guru berarti...",
+                options: ["Hanya fokus pada gaji dan tunjangan", "Menjunjung tinggi nilai-nilai moral dan profesionalisme dalam setiap tindakan", "Mengikuti semua gosip di sekolah", "Membocorkan rahasia siswa kepada umum"],
+                answer: "Menjunjung tinggi nilai-nilai moral dan profesionalisme dalam setiap tindakan"
+            },
+
+            // Professional Competence (10 questions)
+            {
+                type: "professional",
+                question: "Penguasaan materi pelajaran secara mendalam dan kemampuan mengembangkan materi pembelajaran secara kreatif merupakan indikator dari kompetensi...",
+                options: ["Pedagogik", "Sosial", "Kepribadian", "Profesional"],
+                answer: "Profesional"
+            },
+            {
+                type: "professional",
+                question: "Seorang guru ingin meningkatkan kualitas pembelajarannya melalui Penelitian Tindakan Kelas (PTK). Langkah awal yang harus dilakukan adalah...",
+                options: ["Menyusun laporan hasil PTK", "Mengidentifikasi masalah pembelajaran di kelas", "Melaksanakan tindakan perbaikan", "Mengumpulkan data awal"],
+                answer: "Mengidentifikasi masalah pembelajaran di kelas"
+            },
+            {
+                type: "professional",
+                question: "Pengembangan keprofesian berkelanjutan (PKB) bagi guru PNS merupakan sebuah keharusan. Bentuk PKB yang paling efektif untuk meningkatkan kualitas pembelajaran adalah...",
+                options: ["Hanya mengikuti seminar daring gratis", "Menyusun karya tulis ilmiah dan berpartisipasi dalam komunitas belajar guru", "Membaca buku teks pelajaran baru saja", "Menunggu instruksi dari dinas pendidikan untuk setiap kegiatan"],
+                answer: "Menyusun karya tulis ilmiah dan berpartisipasi dalam komunitas belajar guru"
+            },
+            {
+                type: "professional",
+                question: "Seorang guru perlu memahami dan menguasai Standar Isi, Standar Proses, Standar Kompetensi Lulusan, dan Standar Penilaian. Ini termasuk dalam lingkup kompetensi...",
+                options: ["Pedagogik", "Sosial", "Profesional", "Kepribadian"],
+                answer: "Profesional"
+            },
+            {
+                type: "professional",
+                question: "Manfaat utama dari refleksi diri bagi seorang guru adalah...",
+                options: ["Menilai kinerja rekan sejawat", "Mengidentifikasi kekuatan dan kelemahan dalam praktik mengajar untuk perbaikan", "Menambah beban administrasi guru", "Hanya untuk memenuhi tuntutan birokrasi"],
+                answer: "Mengidentifikasi kekuatan dan kelemahan dalam praktik mengajar untuk perbaikan"
+            },
+            {
+                type: "professional",
+                question: "Guru profesional harus mampu menggunakan teknologi informasi dan komunikasi (TIK) dalam pembelajaran untuk...",
+                options: ["Menggantikan peran guru sepenuhnya", "Meningkatkan efisiensi dan efektivitas proses pembelajaran", "Hanya untuk hiburan siswa", "Menambah tugas administratif guru"],
+                answer: "Meningkatkan efisiensi dan efektivitas proses pembelajaran"
+            },
+            {
+                type: "professional",
+                question: "Kemampuan guru dalam menyusun bahan ajar yang inovatif dan relevan dengan perkembangan zaman termasuk dalam kompetensi...",
+                options: ["Pedagogik", "Profesional", "Sosial", "Kepribadian"],
+                answer: "Profesional"
+            },
+            {
+                type: "professional",
+                question: "Penelitian dan pengembangan dalam bidang pendidikan sangat penting bagi guru untuk...",
+                options: ["Mencari popularitas", "Memperbarui pengetahuan dan praktik mengajar", "Menambah beban kerja semata", "Hanya dilakukan oleh akademisi"],
+                answer: "Memperbarui pengetahuan dan praktik mengajar"
+            },
+            {
+                type: "professional",
+                question: "Indikator guru memiliki penguasaan materi yang luas dan mendalam adalah...",
+                options: ["Hanya mengajar sesuai buku teks", "Mampu menjawab semua pertanyaan siswa dengan spontan dan akurat", "Menggunakan catatan selama mengajar", "Sering meminta siswa mencari jawaban sendiri"],
+                answer: "Mampu menjawab semua pertanyaan siswa dengan spontan dan akurat"
+            },
+            {
+                type: "professional",
+                question: "Partisipasi aktif dalam kegiatan ilmiah seperti konferensi atau lokakarya bertujuan untuk...",
+                options: ["Mencari hiburan", "Meningkatkan jejaring sosial", "Mengembangkan wawasan dan pengetahuan profesional", "Menghindari tugas mengajar"],
+                answer: "Mengembangkan wawasan dan pengetahuan profesional"
+            },
+
+            // Leadership Competence (10 questions)
+            {
+                type: "kepemimpinan",
+                question: "Seorang guru yang memiliki jiwa kepemimpinan di sekolah akan...",
+                options: ["Selalu menunggu perintah atasan", "Mengambil inisiatif untuk memecahkan masalah dan menggerakkan perubahan", "Hanya fokus pada tugas mengajar individu", "Menghindari tanggung jawab tambahan"],
+                answer: "Mengambil inisiatif untuk memecahkan masalah dan menggerakkan perubahan"
+            },
+            {
+                type: "kepemimpinan",
+                question: "Kemampuan guru dalam membimbing dan memotivasi rekan kerja untuk mencapai tujuan bersama adalah wujud dari...",
+                options: ["Sikap otoriter", "Kolaborasi yang efektif", "Persaingan tidak sehat", "Sikap apatis"],
+                answer: "Kolaborasi yang efektif"
+            },
+            {
+                type: "kepemimpinan",
+                question: "Sebagai guru pemimpin pembelajaran, Anda perlu...",
+                options: ["Menciptakan lingkungan yang kaku dan otoriter", "Memberikan kebebasan tanpa batasan kepada siswa", "Mendorong inovasi dan kreativitas dalam proses pembelajaran", "Membebankan semua tanggung jawab kepada siswa"],
+                answer: "Mendorong inovasi dan kreativitas dalam proses pembelajaran"
+            },
+            {
+                type: "kepemimpinan",
+                question: "Bagaimana seorang guru dapat menjadi agen perubahan di lingkungan sekolah?",
+                options: ["Dengan menolak setiap perubahan", "Dengan menjadi contoh positif dan menginspirasi rekan lain", "Dengan menyebarkan rumor negatif", "Dengan hanya mengikuti tren tanpa pemahaman"],
+                answer: "Dengan menjadi contoh positif dan menginspirasi rekan lain"
+            },
+            {
+                type: "kepemimpinan",
+                question: "Keterampilan penting yang harus dimiliki guru dalam memimpin sebuah proyek sekolah adalah...",
+                options: ["Kemampuan delegasi tugas", "Tidak melibatkan siapa pun", "Hanya memberikan perintah", "Menyalahkan orang lain jika ada kesalahan"],
+                answer: "Kemampuan delegasi tugas"
+            },
+            {
+                type: "kepemimpinan",
+                question: "Dalam konteks pengembangan profesional guru, peran seorang guru pemimpin adalah...",
+                options: ["Menghambat perkembangan rekan sejawat", "Menginisiasi dan memfasilitasi program pelatihan dan pengembangan", "Menunggu instruksi dari pihak luar", "Menjaga informasi pelatihan untuk diri sendiri"],
+                answer: "Menginisiasi dan memfasilitasi program pelatihan dan pengembangan"
+            },
+            {
+                type: "kepemimpinan",
+                question: "Ketika terjadi konflik di antara siswa, seorang guru pemimpin akan...",
+                options: ["Mengabaikannya", "Mencari kambing hitam", "Menjadi mediator yang netral dan membantu menemukan solusi", "Memihak salah satu siswa"],
+                answer: "Menjadi mediator yang netral dan membantu menemukan solusi"
+            },
+            {
+                type: "kepemimpinan",
+                question: "Bagaimana seorang guru menunjukkan visi ke depan dalam pengembangan pendidikan?",
+                options: ["Hanya fokus pada kurikulum saat ini", "Merencanakan program jangka panjang untuk peningkatan mutu", "Tidak memiliki target yang jelas", "Mengandalkan pihak lain untuk perencanaan"],
+                answer: "Merencanakan program jangka panjang untuk peningkatan mutu"
+            },
+            {
+                type: "kepemimpinan",
+                question: "Guru yang memiliki kompetensi kepemimpinan akan mampu membangun...",
+                options: ["Sistem yang tidak fleksibel", "Hubungan yang vertikal saja", "Tim kerja yang solid dan berorientasi pada tujuan", "Lingkungan yang kompetitif secara tidak sehat"],
+                answer: "Tim kerja yang solid dan berorientasi pada tujuan"
+            },
+            {
+                type: "kepemimpinan",
+                question: "Ciri-ciri guru yang efektif dalam memfasilitasi diskusi dan pengambilan keputusan di kelas adalah...",
+                options: ["Mendominasi diskusi", "Mendorong partisipasi aktif dan menghargai setiap pendapat", "Menentukan keputusan sendiri", "Tidak memberikan kesempatan siswa berbicara"],
+                answer: "Mendorong partisipasi aktif dan menghargai setiap pendapat"
+            },
+
+            // Case Studies (20 questions)
+            {
+                type: "kasus",
+                question: "Seorang siswa di kelas Anda sering terlambat dan menunjukkan sikap apatis dalam pelajaran. Setelah berbicara dengannya, Anda mengetahui bahwa dia memiliki masalah keluarga. Apa tindakan pertama yang paling tepat Anda lakukan?",
+                options: ["Memberi hukuman agar tidak terlambat lagi", "Mengabaikannya karena itu masalah pribadi", "Melakukan pendekatan personal, mendengarkan, dan merujuk ke bimbingan konseling sekolah jika diperlukan", "Membahas masalahnya di depan kelas agar jadi pelajaran bagi yang lain"],
+                answer: "Melakukan pendekatan personal, mendengarkan, dan merujuk ke bimbingan konseling sekolah jika diperlukan"
+            },
+            {
+                type: "kasus",
+                question: "Anda menemukan beberapa siswa menyontek saat ujian. Bagaimana cara Anda menangani situasi ini untuk menegakkan kejujuran sekaligus mendidik siswa?",
+                options: ["Langsung memberikan nilai nol tanpa penjelasan", "Mengabaikan agar tidak menimbulkan keributan", "Memanggil siswa, menjelaskan konsekuensi, dan mencari tahu alasan mereka menyontek untuk memberikan pembinaan", "Membocorkan nama-nama siswa yang menyontek kepada guru lain"],
+                answer: "Memanggil siswa, menjelaskan konsekuensi, dan mencari tahu alasan mereka menyontek untuk memberikan pembinaan"
+            },
+            {
+                type: "kasus",
+                question: "Ada keluhan dari orang tua bahwa metode mengajar Anda terlalu cepat dan membuat anak mereka kesulitan mengikuti. Bagaimana Anda merespons kritik ini secara profesional?",
+                options: ["Menyalahkan orang tua karena kurang membimbing anak", "Mengabaikan keluhan karena merasa sudah mengajar dengan baik", "Menerima masukan, mengevaluasi metode mengajar, dan berdiskusi dengan orang tua untuk mencari solusi bersama", "Menyuruh anak tersebut pindah kelas"],
+                answer: "Menerima masukan, mengevaluasi metode mengajar, dan berdiskusi dengan orang tua untuk mencari solusi bersama"
+            },
+            {
+                type: "kasus",
+                question: "Siswa Anda menunjukkan kurangnya minat pada topik pelajaran yang Anda ajarkan. Apa yang dapat Anda lakukan untuk meningkatkan keterlibatan mereka?",
+                options: ["Memaksakan siswa untuk belajar lebih keras", "Mengurangi jam pelajaran untuk topik tersebut", "Menggunakan variasi metode pengajaran, media interaktif, dan menghubungkan materi dengan kehidupan nyata siswa", "Memberikan tugas yang sangat banyak agar mereka terpaksa belajar"],
+                answer: "Menggunakan variasi metode pengajaran, media interaktif, dan menghubungkan materi dengan kehidupan nyata siswa"
+            },
+            {
+                type: "kasus",
+                question: "Anda melihat seorang rekan guru sering terlambat masuk kelas dan kurang persiapan. Apa tindakan yang tepat untuk menjaga profesionalisme di lingkungan kerja?",
+                options: ["Membicarakan keburukannya dengan guru lain", "Mengabaikan karena bukan urusan Anda", "Mendekati rekan guru secara personal, menawarkan bantuan, dan jika masalah berlanjut, melaporkan kepada kepala sekolah dengan sopan", "Mengambil alih kelasnya agar pembelajaran tetap berjalan"],
+                answer: "Mendekati rekan guru secara personal, menawarkan bantuan, dan jika masalah berlanjut, melaporkan kepada kepala sekolah dengan sopan"
+            },
+            {
+                type: "kasus",
+                question: "Seorang siswa cerdas di kelas Anda sering menyelesaikan tugas lebih cepat dan tampak bosan. Bagaimana Anda dapat memfasilitasi perkembangannya lebih lanjut?",
+                options: ["Memberinya tugas yang sama dengan siswa lain", "Mengabaikannya karena dia sudah pintar", "Memberikan materi pengayaan, proyek yang menantang, atau memintanya membantu teman yang kesulitan", "Menyuruhnya untuk tidur di kelas agar tidak mengganggu"],
+                answer: "Memberikan materi pengayaan, proyek yang menantang, atau memintanya membantu teman yang kesulitan"
+            },
+            {
+                type: "kasus",
+                question: "Anda mendapati adanya isu bullying di sekolah yang melibatkan kelompok siswa. Langkah preventif dan kuratif apa yang akan Anda lakukan?",
+                options: ["Membubarkan kelompok siswa tersebut tanpa penjelasan", "Mengabaikan dan berharap masalahnya selesai sendiri", "Mengadakan sosialisasi anti-bullying, membangun lingkungan sekolah yang inklusif, dan memberikan sanksi sesuai aturan bagi pelaku", "Menyalahkan korban karena tidak membela diri"],
+                answer: "Mengadakan sosialisasi anti-bullying, membangun lingkungan sekolah yang inklusif, dan memberikan sanksi sesuai aturan bagi pelaku"
+            },
+            {
+                type: "kasus",
+                question: "Anda ditugaskan untuk mengembangkan program ekstrakurikuler baru di sekolah, namun fasilitas dan anggaran sangat terbatas. Bagaimana Anda menghadapi tantangan ini?",
+                options: ["Menyerah karena keterbatasan", "Menuntut fasilitas lengkap sebelum memulai", "Melakukan eksplorasi sumber daya yang ada, berkolaborasi dengan pihak luar, dan memulai dengan apa yang tersedia", "Menunda program sampai anggaran mencukupi"],
+                answer: "Melakukan eksplorasi sumber daya yang ada, berkolaborasi dengan pihak luar, dan memulai dengan apa yang tersedia"
+            },
+            {
+                type: "kasus",
+                question: "Seorang siswa menunjukkan perilaku agresif di kelas dan sering mengganggu teman-temannya. Apa pendekatan terbaik untuk mengatasi perilaku ini?",
+                options: ["Langsung mengeluarkan siswa dari kelas", "Mengabaikannya agar tidak memperburuk situasi", "Melakukan pendekatan empatik untuk memahami akar masalahnya, menetapkan batasan yang jelas, dan bekerja sama dengan orang tua serta konselor", "Memberinya hukuman fisik yang berat"],
+                answer: "Melakukan pendekatan empatik untuk memahami akar masalahnya, menetapkan batasan yang jelas, dan bekerja sama dengan orang tua serta konselor"
+            },
+            {
+                type: "kasus",
+                question: "Anda menerima tugas tambahan yang melampaui deskripsi pekerjaan Anda sebagai guru, dan merasa terbebani. Bagaimana Anda mengelola situasi ini?",
+                options: ["Menolak semua tugas tambahan", "Mengerjakan semua tugas meskipun stres", "Berkomunikasi secara terbuka dengan atasan mengenai beban kerja dan mencari solusi bersama", "Mengeluh kepada rekan kerja tanpa tindakan"],
+                answer: "Berkomunikasi secara terbuka dengan atasan mengenai beban kerja dan mencari solusi bersama"
+            },
+            {
+                type: "kasus",
+                question: "Seorang siswa berkebutuhan khusus baru masuk kelas Anda, dan Anda merasa kurang memiliki pengalaman dalam mengajar siswa dengan kebutuhan tersebut. Apa yang harus Anda lakukan?",
+                options: ["Meminta siswa tersebut dipindahkan ke kelas lain", "Mengajar seperti biasa tanpa penyesuaian", "Mencari informasi, mengikuti pelatihan, dan berkolaborasi dengan guru pembimbing khusus atau ahli terkait", "Menyalahkan sekolah karena tidak menyediakan guru yang sesuai"],
+                answer: "Mencari informasi, mengikuti pelatihan, dan berkolaborasi dengan guru pembimbing khusus atau ahli terkait"
+            },
+            {
+                type: "kasus",
+                question: "Beberapa siswa di kelas Anda berasal dari latar belakang ekonomi yang kurang beruntung, sehingga kesulitan mengakses sumber belajar digital. Bagaimana Anda memastikan mereka tetap bisa belajar optimal?",
+                options: ["Menyuruh mereka membeli perangkat sendiri", "Mengabaikan masalah tersebut", "Menyediakan akses ke sumber belajar non-digital, memanfaatkan perpustakaan sekolah, atau mengorganisir kelompok belajar di sekolah", "Memberi nilai rendah karena tidak bisa mengakses teknologi"],
+                answer: "Menyediakan akses ke sumber belajar non-digital, memanfaatkan perpustakaan sekolah, atau mengorganisir kelompok belajar di sekolah"
+            },
+            {
+                type: "kasus",
+                question: "Sekolah Anda akan mengadakan acara besar, dan Anda diminta menjadi koordinator seksi tertentu. Namun, Anda merasa jadwal Anda sudah sangat padat. Apa yang akan Anda lakukan?",
+                options: ["Menolak tawaran secara langsung", "Menerima tawaran tetapi bekerja asal-asalan", "Mengekspresikan kekhawatiran Anda kepada kepala sekolah, mengusulkan pembagian tugas, atau mencari bantuan dari rekan lain", "Berpura-pura sakit agar tidak terlibat"],
+                answer: "Mengekspresikan kekhawatiran Anda kepada kepala sekolah, mengusulkan pembagian tugas, atau mencari bantuan dari rekan lain"
+            },
+            {
+                type: "kasus",
+                question: "Anda mendapati adanya rumor negatif tentang seorang siswa yang beredar di kalangan siswa lain. Bagaimana Anda menangani situasi ini untuk melindungi siswa tersebut?",
+                options: ["Membiarkan rumor tersebut berkembang", "Menyebarkan rumor balasan", "Memanggil siswa yang menyebarkan rumor, mengedukasi tentang dampak negatif rumor, dan memberikan dukungan kepada siswa yang menjadi korban", "Menasihati korban untuk tidak mempedulikan rumor"],
+                answer: "Memanggil siswa yang menyebarkan rumor, mengedukasi tentang dampak negatif rumor, dan memberikan dukungan kepada siswa yang menjadi korban"
+            },
+            {
+                type: "kasus",
+                question: "Seorang siswa secara terbuka menantang otoritas Anda di depan kelas. Bagaimana Anda menanggapi situasi ini dengan tenang dan profesional?",
+                options: ["Marah dan mengeluarkannya dari kelas", "Mengabaikan tantangan tersebut", "Menjaga ketenangan, berbicara secara pribadi dengan siswa tersebut setelah kelas usai, dan mencari tahu akar masalah perilakunya", "Meminta bantuan siswa lain untuk menenangkan situasi"],
+                answer: "Menjaga ketenangan, berbicara secara pribadi dengan siswa tersebut setelah kelas usai, dan mencari tahu akar masalah perilakunya"
+            },
+            {
+                type: "kasus",
+                question: "Anda ingin menerapkan metode pembelajaran baru yang inovatif, tetapi beberapa rekan guru skeptis dan tidak mendukung. Bagaimana Anda menghadapi resistensi ini?",
+                options: ["Membatalkan rencana Anda", "Menerapkan metode tersebut secara diam-diam", "Mempresentasikan manfaat metode baru, berbagi pengalaman positif, dan mengundang rekan guru untuk berkolaborasi", "Mengkritik balik rekan guru yang skeptis"],
+                answer: "Mempresentasikan manfaat metode baru, berbagi pengalaman positif, dan mengundang rekan guru untuk berkolaborasi"
+            },
+            {
+                type: "kasus",
+                question: "Terjadi perdebatan sengit antar siswa mengenai perbedaan agama saat pelajaran agama. Bagaimana Anda berperan sebagai mediator?",
+                options: ["Membiarkan mereka berdebat hingga selesai", "Menyuruh mereka menghentikan perdebatan tanpa solusi", "Mendorong dialog terbuka dengan saling menghormati, mengedukasi tentang toleransi, dan memfasilitasi pemahaman bersama", "Memihak pada agama mayoritas"],
+                answer: "Mendorong dialog terbuka dengan saling menghormati, mengedukasi tentang toleransi, dan memfasilitasi pemahaman bersama"
+            },
+            {
+                type: "kasus",
+                question: "Anda menemukan adanya fasilitas sekolah yang rusak dan mengganggu proses pembelajaran (misal: proyektor tidak berfungsi). Apa tindakan yang paling tepat?",
+                options: ["Mengabaikannya sampai ada yang memperbaiki", "Membeli yang baru dengan uang pribadi", "Melaporkan kerusakan kepada pihak terkait (misal: bagian sarana prasarana), dan mencari alternatif solusi sementara untuk pembelajaran", "Mengeluh kepada siswa tentang fasilitas yang buruk"],
+                answer: "Melaporkan kerusakan kepada pihak terkait (misal: bagian sarana prasarana), dan mencari alternatif solusi sementara untuk pembelajaran"
+            },
+            {
+                type: "kasus",
+                question: "Seorang siswa menunjukkan bakat luar biasa dalam suatu bidang (misal: seni atau olahraga) tetapi nilai akademiknya menurun. Bagaimana Anda menyeimbangkan dukungannya?",
+                options: ["Memintanya fokus hanya pada akademik", "Mengabaikan bakatnya dan hanya fokus pada nilai", "Memberikan dukungan pada bakatnya sambil mencari cara untuk meningkatkan motivasi belajar akademiknya, mungkin dengan jadwal fleksibel atau bimbingan khusus", "Menyuruhnya memilih salah satu saja"],
+                answer: "Memberikan dukungan pada bakatnya sambil mencari cara untuk meningkatkan motivasi belajar akademiknya, mungkin dengan jadwal fleksibel atau bimbingan khusus"
+            },
+            {
+                type: "kasus",
+                question: "Anda diminta untuk menjadi pembina upacara bendera, padahal Anda tidak memiliki pengalaman sebelumnya. Apa yang akan Anda lakukan?",
+                options: ["Menolak tugas tersebut", "Menerima tanpa persiapan", "Mencari referensi, berlatih, dan meminta bimbingan dari guru yang lebih berpengalaman", "Melakukan seenaknya saja"],
+                answer: "Mencari referensi, berlatih, dan meminta bimbingan dari guru yang lebih berpengalaman"
+            }
+        ];
+
+        const timeLimitInMinutes = 30; // Changed to 30 minutes
+        let timeLeft = timeLimitInMinutes * 60; // seconds
+        let timerInterval;
+
+        const quizForm = document.getElementById('quizForm');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const timerDisplay = document.getElementById('timer');
+        const resultsDiv = document.getElementById('results');
+        const resultNamaGuru = document.getElementById('resultNamaGuru');
+        const resultNIP = document.getElementById('resultNIP');
+        const scoreDisplay = document.getElementById('score');
+        const messageDisplay = document.getElementById('message');
+        const answerDetailsDiv = document.getElementById('answerDetails');
+
+        // Cooldown duration: 1 hour in milliseconds
+        const cooldownDuration = 60 * 60 * 1000;
+        // Key to store timestamp in localStorage
+        const lastQuizCompletionKey = 'lastQuizCompletionTimeUKKJ';
+
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Function to generate and display questions
+        function generateQuestions() {
+            shuffleArray(questions); // Shuffle the order of questions
+            questionsContainer.innerHTML = ''; // Clear previous questions
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+
+                // Shuffle options for each question
+                const shuffledOptions = [...q.options];
+                shuffleArray(shuffledOptions);
+
+                questionDiv.innerHTML = `
+                    <p>${index + 1}. ${q.question}</p>
+                    <div class="options">
+                        ${shuffledOptions.map((option) => `
+                            <label>
+                                <input type="radio" name="q${index}" value="${option}"> ${option}
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                questionsContainer.appendChild(questionDiv);
+            });
+        }
+
+        // Function to start the timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerDisplay.textContent = `Waktu tersisa: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu habis! Uji kompetensi akan otomatis disubmit.");
+                    quizForm.dispatchEvent(new Event('submit')); // Automatically submit the form
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        // Handle form submission
+        quizForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+            clearInterval(timerInterval); // Stop the timer
+
+            let totalScore = 0; // Initialize total score
+            const pointsPerCorrect = 5; // Points for each correct answer
+            const pointsPerIncorrect = -2; // Points deducted for each incorrect answer
+            const maxPossibleScore = questions.length * pointsPerCorrect; // Maximum possible score
+
+            const answers = {};
+
+            questions.forEach((q, index) => {
+                const selectedOption = document.querySelector(`input[name="q${index}"]:checked`);
+                const userAnswer = selectedOption ? selectedOption.value : null;
+                answers[`q${index}`] = userAnswer;
+
+                if (userAnswer === q.answer) {
+                    totalScore += pointsPerCorrect; // Add points if answer is correct
+                } else if (userAnswer !== null) { // If answered but wrong
+                    totalScore += pointsPerIncorrect; // Deduct points if answer is incorrect
+                }
+                // If not answered (null), no points are added or deducted
+            });
+
+            // Save quiz completion timestamp to localStorage
+            localStorage.setItem(lastQuizCompletionKey, Date.now());
+
+            // Display results
+            resultNamaGuru.textContent = document.getElementById('namaGuru').value;
+            resultNIP.textContent = document.getElementById('nip').value;
+            scoreDisplay.textContent = `${totalScore} / ${maxPossibleScore}`;
+
+            // Determine message based on score
+            if (totalScore >= (0.80 * maxPossibleScore)) { // 80% of max score
+                messageDisplay.textContent = "Selamat, Anda Layak Naik Pangkat!";
+                messageDisplay.style.color = "green";
+            } else {
+                messageDisplay.textContent = "Anda Perlu Belajar Lagi.";
+                messageDisplay.style.color = "red";
+            }
+
+            // Display answer details
+            answerDetailsDiv.innerHTML = '';
+            questions.forEach((q, index) => {
+                const userAnswer = answers[`q${index}`];
+                const detailDiv = document.createElement('p');
+                let answerStatusClass = '';
+                let userAnswerText = userAnswer !== null ? userAnswer : 'Tidak dijawab';
+
+                if (userAnswer === q.answer) {
+                    answerStatusClass = 'correct';
+                } else if (userAnswer !== null) { // If answered but wrong
+                    answerStatusClass = 'incorrect';
+                } else { // If not answered
+                    answerStatusClass = ''; // No special class
+                }
+
+                detailDiv.innerHTML = `
+                    <strong>${index + 1}. ${q.question}</strong><br>
+                    Jawaban Anda: <span class="${answerStatusClass}">
+                        ${userAnswerText}
+                    </span><br>
+                    Kunci Jawaban: <span class="correct">${q.answer}</span>
+                `;
+                answerDetailsDiv.appendChild(detailDiv);
+            });
+
+            quizForm.style.display = 'none'; // Hide quiz form
+            resultsDiv.style.display = 'block'; // Show results div
+        });
+
+        // Initialize quiz and check cooldown when page loads
+        window.onload = function() {
+            const lastCompletionTime = localStorage.getItem(lastQuizCompletionKey);
+            if (lastCompletionTime) {
+                const timeElapsed = Date.now() - parseInt(lastCompletionTime);
+                if (timeElapsed < cooldownDuration) {
+                    const remainingTime = cooldownDuration - timeElapsed;
+                    const minutes = Math.floor(remainingTime / (1000 * 60));
+                    const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+                    quizForm.style.display = 'none';
+                    timerDisplay.style.display = 'none';
+                    document.getElementById('timeLimitDisplay').style.display = 'none'; // Hide the time limit text
+                    const cooldownMessageDiv = document.createElement('div');
+                    cooldownMessageDiv.classList.add('cooldown-message');
+                    cooldownMessageDiv.innerHTML = `
+                        Anda telah menyelesaikan uji kompetensi ini.<br>
+                        Untuk menjaga integritas proses, Anda dapat mencoba kembali dalam **${minutes.toString().padStart(2, '0')} menit dan ${seconds.toString().padStart(2, '0')} detik**.
+                    `;
+                    document.querySelector('.container').insertBefore(cooldownMessageDiv, document.getElementById('quizForm'));
+                    return; // Stop quiz initialization if still in cooldown
+                }
+            }
+            // If no cooldown or cooldown ended, initialize the quiz
+            generateQuestions();
+            startTimer();
+        };
+    </script>
+</body>
+</html>
